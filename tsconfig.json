@@ -21,12 +21,27 @@
     "lib": [
       "es2020",
       "dom"
-    ]
+    ],
+    // import alias for core as @core
+    "paths": {
+      "@core": [
+        "src/core/index.ts"
+      ],
+      "@core/*": [
+        "src/core/*"
+      ],
+      "@data": [
+        "src/data/index.ts"
+      ],
+      "@data/*": [
+        "src/data/*"
+      ],
+    }
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
     "strictInjectionParameters": true,
     "strictInputAccessModifiers": true,
     "strictTemplates": true
-  }
+  },
 }

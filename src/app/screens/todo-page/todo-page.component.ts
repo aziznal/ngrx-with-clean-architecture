@@ -1,5 +1,5 @@
-import { Todo } from './../../models/todo.model';
-import { TodoService } from '../../data/todo.service';
+import { todoCore } from '@core';
+
 import { Component } from '@angular/core';
 import { CdkDragSortEvent, moveItemInArray } from '@angular/cdk/drag-drop';
 
@@ -25,7 +25,7 @@ export class TodoPageComponent {
     await this.todoService.deleteTodoItem(id);
   }
 
-  async updateTodo(todo: Todo) {
+  async updateTodo(todo: todoCore.entities.Todo) {
     await this.todoService.updateTodoItem(todo);
   }
 
