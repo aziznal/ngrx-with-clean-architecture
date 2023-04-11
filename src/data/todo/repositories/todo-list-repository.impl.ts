@@ -23,15 +23,11 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
   // get methods always fetch from remote first, then update local, then return
   // an observable. This way, consequent calls to create, delete, and reorder
   // can modify local and return it without having to call remote again.
-  loadAllTodos(): Observable<todoCore.repositories.TodoListState> {
-    if (this.#todoListState$.value.loading) {
-      return this.#todoListState$;
-    }
-
+  async loadAllTodos(): Promise<void> {
     // loading is set to true in this one because it's the first call to remote
     this.#emitTodoListState({ loading: true, error: null });
 
-    this.remoteDataSource
+    await this.remoteDataSource
       .getAllTodos()
       .then(todos => {
         this.localTodoListDataSource.setAllTodos(todos);
@@ -43,18 +39,16 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
 
         this.#emitTodoListState({ loading: false, error: error.message });
       });
-
-    return this.#todoListState$;
   }
 
-  create(todo: todoCore.entities.Todo): void {
+  async create(todo: todoCore.entities.Todo): Promise<void> {
     this.#emitTodoListState({ error: null, loading: true });
 
     // optimistic update
     this.localTodoListDataSource.create(todo);
     this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
 
-    this.remoteDataSource
+    await this.remoteDataSource
       .createTodo(todo)
       .then(() => {
         this.#emitTodoListState({ loading: false });
@@ -65,14 +59,14 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
       });
   }
 
-  update(todo: todoCore.entities.Todo): void {
+  async update(todo: todoCore.entities.Todo): Promise<void> {
     this.#emitTodoListState({ error: null, loading: true });
 
     // optimistic update
     this.localTodoListDataSource.update(todo);
     this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
 
-    this.remoteDataSource
+    await this.remoteDataSource
       .updateTodo(todo)
       .then(() => {
         this.#emitTodoListState({ loading: false });
@@ -83,14 +77,14 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
       });
   }
 
-  reorder(from: number, to: number): void {
+  async reorder(from: number, to: number): Promise<void> {
     this.#emitTodoListState({ error: null, loading: true });
 
     // optimistic update
     this.localTodoListDataSource.reorder(from, to);
     this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
 
-    this.remoteDataSource
+    await this.remoteDataSource
       .reorderTodo(from, to)
       .then(() => {
         this.#emitTodoListState({ loading: false });
@@ -101,14 +95,14 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
       });
   }
 
-  delete(id: number): void {
+  async delete(id: number): Promise<void> {
     this.#emitTodoListState({ error: null, loading: true });
 
     // optimistic update
     this.localTodoListDataSource.delete(id);
     this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
 
-    this.remoteDataSource
+    await this.remoteDataSource
       .deleteTodo(id)
       .then(() => {
         this.#emitTodoListState({ loading: false });

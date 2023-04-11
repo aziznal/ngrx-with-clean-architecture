@@ -10,13 +10,13 @@ export interface TodoListState {
 export abstract class TodoListRepository {
   abstract todoListState$: Observable<TodoListState>;
 
-  abstract loadAllTodos(): Observable<TodoListState>;
+  abstract loadAllTodos(): Promise<void>;
 
-  abstract create(todo: Todo): void;
+  abstract create(todo: Todo): Promise<void>;
 
-  abstract update(todo: Todo): void;
+  abstract update(todo: Todo): Promise<void>;
 
-  abstract reorder(from: number, to: number): void;
+  abstract reorder(from: number, to: number): Promise<void>;
 
-  abstract delete(id: number): void;
+  abstract delete(id: number): Promise<void>;
 }

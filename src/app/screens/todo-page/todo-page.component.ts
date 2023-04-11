@@ -1,12 +1,13 @@
 import { Component } from '@angular/core';
 import { todoCore } from '@core';
-import { tap } from 'rxjs';
+import { map, tap } from 'rxjs';
+import { CanDeactivateComponent } from '../../guards/can-decativate-component.template';
 
 @Component({
   templateUrl: './todo-page.component.html',
   styleUrls: ['./todo-page.component.scss'],
 })
-export class TodoPageComponent {
+export class TodoPageComponent implements CanDeactivateComponent {
   state$? = this.getTodosUsecase.execute().pipe(
     tap(state => {
       if (state.error) {
@@ -14,6 +15,20 @@ export class TodoPageComponent {
       }
     }),
   );
+
+  canDeactivate() {
+    if (!this.state$) return true;
+
+    return this.state$.pipe(
+      map(state => {
+        if (state.loading) {
+          return confirm('Are you sure you want to leave? Progress will be lost.');
+        }
+
+        return true;
+      }),
+    );
+  }
 
   constructor(
     public getTodosUsecase: todoCore.usecases.GetAllTodosUsecase,

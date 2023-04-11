@@ -43,19 +43,17 @@ export class TodoRepositoryImpl implements todoCore.repositories.TodoRepository 
   update(todo: todoCore.entities.Todo): void {
     this.#emitTodoState({ loading: true, error: null });
 
+    // optimistic update
+    this.localTodoDataSource.update(todo);
+    this.#emitTodoState({ data: this.localTodoDataSource.getTodo() });
+
     this.remoteDataSource
       .updateTodo(todo)
       .then(() => {
-        // update local todo
-        this.localTodoDataSource.update(todo);
-
-        // emit updated local todo
-        this.#emitTodoState({ loading: false, data: this.localTodoDataSource.getTodo() });
+        this.#emitTodoState({ loading: false });
       })
       .catch(error => {
-        // reset cache on error
-        this.localTodoDataSource.update(null);
-
+        this.loadTodoById(todo.id); // reset cache on error
         this.#emitTodoState({ loading: false, error: error.message, data: null });
       });
   }
@@ -70,12 +68,10 @@ export class TodoRepositoryImpl implements todoCore.repositories.TodoRepository 
         this.localTodoDataSource.update(null);
 
         // emit updated local list
-        this.#emitTodoState({ loading: false, data: this.localTodoDataSource.getTodo() });
+        this.#emitTodoState({ loading: false });
       })
       .catch(error => {
-        // reset cache on error
-        this.localTodoDataSource.update(null);
-
+        this.loadTodoById(id); // reset cache on error
         this.#emitTodoState({ loading: false, error: error.message, data: null });
       });
   }
