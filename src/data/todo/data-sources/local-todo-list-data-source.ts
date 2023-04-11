@@ -6,6 +6,8 @@ export abstract class LocalTodoListDataSource {
 
   abstract create(todo: todoCore.entities.Todo): void;
 
+  abstract update(todo: todoCore.entities.Todo | null): void;
+
   abstract delete(id: number): void;
 
   abstract reorder(from: number, to: number): void;
@@ -33,6 +35,25 @@ export class LocalTodoListDataSourceImpl implements LocalTodoListDataSource {
     }
 
     this.todos.push(todo);
+  }
+
+  update(todos: todoCore.entities.Todo | null): void {
+    if (this.todos === null) {
+      return;
+    }
+
+    if (todos === null) {
+      this.todos = null;
+      return;
+    }
+
+    const index = this.todos.findIndex(t => t.id === todos.id);
+
+    if (index === -1) {
+      throw new Error(`Todo with id ${todos.id} not found`);
+    }
+
+    this.todos[index] = todos;
   }
 
   delete(id: number): void {

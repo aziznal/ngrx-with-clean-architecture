@@ -1,14 +1,15 @@
-<ng-container *ngIf="(todoService.state$ | async) as state">
+<ng-container *ngIf="(state$ | async) as state">
+
   <div
     id="pageContainer"
     cdkDropList
-    (cdkDropListDropped)="moveTodoItem($event)"
+    (cdkDropListDropped)="reorderTodoUsecase.execute($event.previousIndex, $event.currentIndex)"
   >
     <div id="header">
       <h2>Todo List</h2>
 
       <button
-        (click)="createTodo()"
+        (click)="createTodoUsecase.execute()"
         [disabled]="state.loading"
       >
         <i class="fas fa-plus"></i>
@@ -17,12 +18,11 @@
       </button>
     </div>
 
-
     <app-todo-item
       *ngFor="let todo of state.data"
       [todo]="todo"
-      (updated)="updateTodo($event)"
-      (deleted)="deleteTodo($event)"
+      (updated)="updateTodoUsecase.execute($event)"
+      (deleted)="deleteTodoUsecase.execute($event)"
       appDisabledOverlay
       [disabled]="state.loading"
       [cdkDragDisabled]="state.loading"

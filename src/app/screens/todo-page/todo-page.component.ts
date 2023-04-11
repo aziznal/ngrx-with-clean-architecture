@@ -1,35 +1,18 @@
-import { todoCore } from '@core';
-
 import { Component } from '@angular/core';
-import { CdkDragSortEvent, moveItemInArray } from '@angular/cdk/drag-drop';
+import { todoCore } from '@core';
 
 @Component({
   templateUrl: './todo-page.component.html',
   styleUrls: ['./todo-page.component.scss'],
 })
 export class TodoPageComponent {
-  constructor(public todoService: TodoService) {}
+  state$? = this.getTodosUsecase.execute();
 
-  todos$ = this.todoService.todos$;
-
-  async createTodo() {
-    await this.todoService.addTodoItem({
-      id: Math.floor(Math.random() * 1000),
-      title: 'New Todo',
-      description: 'New Todo Description',
-      completed: false,
-    });
-  }
-
-  async deleteTodo(id: number) {
-    await this.todoService.deleteTodoItem(id);
-  }
-
-  async updateTodo(todo: todoCore.entities.Todo) {
-    await this.todoService.updateTodoItem(todo);
-  }
-
-  moveTodoItem(event: CdkDragSortEvent) {
-    this.todoService.reorderItem(event.previousIndex, event.currentIndex);
-  }
+  constructor(
+    public getTodosUsecase: todoCore.usecases.GetAllTodosUsecase,
+    public createTodoUsecase: todoCore.usecases.CreateTodoInListUsecase,
+    public updateTodoUsecase: todoCore.usecases.UpdateTodoInListUsecase,
+    public deleteTodoUsecase: todoCore.usecases.DeleteTodoInListUsecase,
+    public reorderTodoUsecase: todoCore.usecases.ReorderTodoInListUsecase,
+  ) {}
 }

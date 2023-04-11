@@ -1,4 +1,5 @@
-import { Todo } from './../../models/todo.model';
+import { todoCore } from '@core';
+
 import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 
 @Component({
@@ -14,10 +15,10 @@ export class TodoItemComponent implements OnInit, OnChanges {
   descriptionInputRef!: ElementRef<HTMLInputElement>;
 
   @Input()
-  todo!: Todo;
+  todo!: todoCore.entities.Todo;
 
   @Output()
-  updated = new EventEmitter<Todo>();
+  updated = new EventEmitter<todoCore.entities.Todo>();
 
   @Output()
   deleted = new EventEmitter<number>();
@@ -25,7 +26,7 @@ export class TodoItemComponent implements OnInit, OnChanges {
   isEditMode = false;
 
   // used when editing a todo
-  editedTodo: Todo = { ...this.todo };
+  editedTodo: todoCore.entities.Todo = { ...this.todo };
 
   ngOnInit(): void {
     if (!this.todo) {
@@ -33,7 +34,7 @@ export class TodoItemComponent implements OnInit, OnChanges {
     }
   }
 
-  ngOnChanges(): void { }
+  ngOnChanges(): void {}
 
   complete(): void {
     this.update({ ...this.todo, completed: true });
@@ -51,7 +52,7 @@ export class TodoItemComponent implements OnInit, OnChanges {
     }
   }
 
-  update(updatedTodo: Todo): void {
+  update(updatedTodo: todoCore.entities.Todo): void {
     this.updated.emit(updatedTodo);
   }
 

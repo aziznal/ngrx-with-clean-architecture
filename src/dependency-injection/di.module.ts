@@ -19,38 +19,62 @@ const providers: Provider[] = [
 
   // Repository injections
   {
+    provide: todoCore.repositories.TodoListRepository,
+    useFactory: (
+      remoteDataSource: todoData.dataSources.RemoteTodoDataSource,
+      localTodoListDataSource: todoData.dataSources.LocalTodoListDataSource,
+    ) => new todoData.repositories.TodoListRepositoryImpl(remoteDataSource, localTodoListDataSource),
+    deps: [todoData.dataSources.RemoteTodoDataSource, todoData.dataSources.LocalTodoListDataSource],
+  },
+  {
     provide: todoCore.repositories.TodoRepository,
     useFactory: (
       remoteDataSource: todoData.dataSources.RemoteTodoDataSource,
       localDataSource: todoData.dataSources.LocalTodoDataSource,
-      localTodoListDataSource: todoData.dataSources.LocalTodoListDataSource,
-    ) => new todoData.repositories.TodoRepositoryImpl(remoteDataSource, localDataSource, localTodoListDataSource),
-    deps: [
-      todoData.dataSources.RemoteTodoDataSource,
-      todoData.dataSources.LocalTodoListDataSource,
-      todoData.dataSources.LocalTodoListDataSource,
-    ],
+    ) => new todoData.repositories.TodoRepositoryImpl(remoteDataSource, localDataSource),
+    deps: [todoData.dataSources.RemoteTodoDataSource, todoData.dataSources.LocalTodoDataSource],
   },
 
   // Usecase injections
   {
     provide: todoCore.usecases.GetAllTodosUsecase,
-    useFactory: (repo: todoCore.repositories.TodoRepository) => new todoCore.usecases.GetAllTodosImpl(repo),
+    useFactory: (repo: todoCore.repositories.TodoListRepository) => new todoCore.usecases.GetAllTodosImpl(repo),
+    deps: [todoCore.repositories.TodoListRepository],
+  },
+  {
+    provide: todoCore.usecases.GetTodoByIdUsecase,
+    useFactory: (repo: todoCore.repositories.TodoRepository) => new todoCore.usecases.GetTodoByIdUsecaseImpl(repo),
     deps: [todoCore.repositories.TodoRepository],
+  },
+  {
+    provide: todoCore.usecases.CreateTodoInListUsecase,
+    useFactory: (repo: todoCore.repositories.TodoListRepository) =>
+      new todoCore.usecases.CreateTodoInListUsecaseImpl(repo),
+    deps: [todoCore.repositories.TodoListRepository],
+  },
+  {
+    provide: todoCore.usecases.DeleteTodoInListUsecase,
+    useFactory: (repo: todoCore.repositories.TodoListRepository) =>
+      new todoCore.usecases.DeleteTodoInListUsecaseImpl(repo),
+    deps: [todoCore.repositories.TodoListRepository],
+  },
+  {
+    provide: todoCore.usecases.UpdateTodoInListUsecase,
+    useFactory: (repo: todoCore.repositories.TodoListRepository) =>
+      new todoCore.usecases.UpdateTodoInListUsecaseImpl(repo),
+    deps: [todoCore.repositories.TodoListRepository],
+  },
+  {
+    provide: todoCore.usecases.ReorderTodoInListUsecase,
+    useFactory: (repo: todoCore.repositories.TodoListRepository) =>
+      new todoCore.usecases.ReorderTodoInListUsecaseImpl(repo),
+    deps: [todoCore.repositories.TodoListRepository],
   },
 ];
 
 @NgModule()
 export class DependencyInjectionModule {
-  static hasBeenInitialized = false;
-
   static forRoot() {
-    if (this.hasBeenInitialized) {
-      throw new Error('DependencyInjectionModule has already been initialized');
-    }
-
-    this.hasBeenInitialized = true;
-
     return {
       ngModule: DependencyInjectionModule,
       providers: [...providers],
