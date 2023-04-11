@@ -1,6 +1,8 @@
+import { map, Observable, tap } from 'rxjs';
+
 import { Component } from '@angular/core';
 import { todoCore } from '@core';
-import { map, tap } from 'rxjs';
+
 import { CanDeactivateComponent } from '../../guards/can-decativate-component.template';
 
 @Component({
@@ -16,6 +18,19 @@ export class TodoListPageComponent implements CanDeactivateComponent {
     }),
   );
 
+  sidePanelTodoId?: number;
+  isSidePanelDisplayed = false;
+
+  constructor(
+    public getTodosUsecase: todoCore.usecases.GetTodoListUsecase,
+    public createTodoUsecase: todoCore.usecases.CreateTodoUsecase,
+    public updateTodoUsecase: todoCore.usecases.UpdateTodoUsecase,
+    public deleteTodoUsecase: todoCore.usecases.DeleteTodoUsecase,
+    public reorderTodoUsecase: todoCore.usecases.ReorderTodoUsecase,
+
+    public getTodoByIdUsecase: todoCore.usecases.GetTodoByIdUsecase,
+  ) {}
+
   canDeactivate() {
     if (!this.state$) return true;
 
@@ -30,15 +45,17 @@ export class TodoListPageComponent implements CanDeactivateComponent {
     );
   }
 
-  constructor(
-    public getTodosUsecase: todoCore.usecases.GetTodoListUsecase,
-    public createTodoUsecase: todoCore.usecases.CreateTodoUsecase,
-    public updateTodoUsecase: todoCore.usecases.UpdateTodoUsecase,
-    public deleteTodoUsecase: todoCore.usecases.DeleteTodoUsecase,
-    public reorderTodoUsecase: todoCore.usecases.ReorderTodoUsecase,
-  ) {}
-
   trackByFn(index: number, item: todoCore.entities.Todo) {
     return item.id;
+  }
+
+  displayInSidePanel(todo: todoCore.entities.Todo) {
+    this.sidePanelTodoId = todo.id;
+    this.isSidePanelDisplayed = true;
+  }
+
+  hideSidePanel() {
+    this.sidePanelTodoId = undefined;
+    this.isSidePanelDisplayed = false;
   }
 }

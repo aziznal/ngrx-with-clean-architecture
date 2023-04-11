@@ -1,5 +1,4 @@
 <ng-container *ngIf="(state$ | async) as state">
-
   <div
     id="pageContainer"
     cdkDropList
@@ -34,6 +33,7 @@
       [todo]="todo"
       (updated)="updateTodoUsecase.execute($event)"
       (deleted)="deleteTodoUsecase.execute($event)"
+      (opened)="displayInSidePanel(todo)"
       cdkDrag
     ></app-todo-item>
 
@@ -45,4 +45,11 @@
     </div>
 
   </div>
+</ng-container>
+
+<ng-container *ngIf="isSidePanelDisplayed && sidePanelTodoId">
+  <app-todo-details-section
+    [id]="sidePanelTodoId"
+    (closed)="hideSidePanel()"
+  ></app-todo-details-section>
 </ng-container>

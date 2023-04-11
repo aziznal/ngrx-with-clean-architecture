@@ -79,8 +79,9 @@
 <div class="d-flex fx-row gap-6">
   <!-- Open Link icon -->
   <a
-    routerLink="/todo/{{ todo.id }}"
     *ngIf="!isEditMode"
+    (click)="opened.emit()"
+    style="cursor: pointer;"
   >
     <i class="fas fa-external-link-alt"></i>
   </a>

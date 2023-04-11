@@ -1,0 +1,45 @@
+<button
+  (click)="closed.emit()"
+  style="width: 100px;"
+>
+  <i class="fas fa-times"></i>
+
+  Close
+</button>
+
+<h1>
+  Todo Details ({{ id }})
+</h1>
+
+<ng-container *ngIf="(state$ | async) as state">
+  <ng-container *ngIf="state.loading">
+    <p>Loading...</p>
+  </ng-container>
+
+  <ng-container *ngIf="!state.loading && state.data">
+    <div style="display: flex; flex-direction: row; gap: 8px;">
+      <h3>
+        Title:
+      </h3>
+
+      {{ state.data.title }}
+
+    </div>
+
+    <div style="display: flex; flex-direction: row; gap: 8px;">
+      <h3>
+        Description:
+      </h3>
+
+      {{ state.data.description }}
+
+    </div>
+
+    <div style="display: flex; flex-direction: row; gap: 8px;">
+      <h3>
+        Completed:
+      </h3>
+
+      {{ state.data.completed }}
+    </div>
+  </ng-container>

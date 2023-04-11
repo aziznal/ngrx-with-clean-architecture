@@ -1,33 +1,39 @@
-import { todoCore } from '@core';
 import { Observable, tap } from 'rxjs';
 
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, EventEmitter, Input, OnChanges, Output } from '@angular/core';
+import { Router } from '@angular/router';
+import { todoCore } from '@core';
 
 import { CanDeactivateComponent } from '../../guards/can-decativate-component.template';
 
 @Component({
-  templateUrl: './todo-details-page.component.html',
-  styleUrls: ['./todo-details-page.component.scss'],
+  selector: 'app-todo-details-section',
+  templateUrl: './todo-details-section.component.html',
+  styleUrls: ['./todo-details-section.component.scss'],
 })
-export class TodoDetailsPageComponent implements OnInit, CanDeactivateComponent {
+export class TodoDetailsSectionComponent implements OnChanges, CanDeactivateComponent {
+  @Input()
   id!: number;
+
+  @Output()
+  closed = new EventEmitter<void>();
 
   state$?: Observable<todoCore.repositories.TodoState>;
 
   constructor(
-    private route: ActivatedRoute,
     private router: Router,
 
     private getTodoByIdUsecase: todoCore.usecases.GetTodoByIdUsecase,
   ) {}
 
-  ngOnInit() {
-    this.id = +this.route.snapshot.params['id'];
+  ngOnChanges() {
+    this.#init();
+  }
 
+  #init() {
     if (this.id === null || this.id === undefined) {
       alert('Invalid todo id');
-      this.router.navigateByUrl('/todo');
+      this.router.navigateByUrl('/todos');
     }
 
     this.state$ = this.getTodoByIdUsecase.execute(this.id).pipe(

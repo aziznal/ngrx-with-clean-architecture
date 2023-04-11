@@ -14,9 +14,15 @@ import { TodoListPageComponent } from './screens/todo-list-page/todo-list-page.c
 import { DisabledDirective } from './directives/disabled-overlay.directive';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { TodoDetailsPageComponent } from './screens/todo-details-page/todo-details-page.component';
+import { TodoDetailsSectionComponent } from './screens/todo-details-section/todo-details-section.component';
 @NgModule({
-  declarations: [AppComponent, TodoListPageComponent, TodoDetailsPageComponent, TodoItemComponent, DisabledDirective],
+  declarations: [
+    AppComponent,
+    TodoListPageComponent,
+    TodoDetailsSectionComponent,
+    TodoItemComponent,
+    DisabledDirective,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,

@@ -35,13 +35,19 @@ export class TodoRepositoryImpl implements todoCore.repositories.TodoRepository 
   // an observable. This way, consequent calls to create, delete, and reorder
   // can modify local and return it without having to call remote again.
   async loadAllTodos(): Promise<void> {
-    // loading is set to true in this one because it's the first call to remote
     this.#emitTodoListState({ loading: true, error: null });
 
     await this.remote
       .getAllTodos()
       .then(todos => {
         this.localList.setAllTodos(todos);
+
+        // if local todo is in the list, update it
+        const localTodo = this.local.getTodo();
+        if (localTodo && todos.find(todo => todo.id === localTodo.id)) {
+          this.local.update(todos.find(todo => todo.id === localTodo.id)!);
+        }
+
         this.#emitTodoListState({ loading: false, data: this.localList.getAllTodos(), error: null });
       })
       .catch(error => {
@@ -62,6 +68,7 @@ export class TodoRepositoryImpl implements todoCore.repositories.TodoRepository 
         this.localList.update(todo);
 
         this.#emitTodoState({ loading: false, data: this.local.getTodo(), error: null });
+        this.#emitTodoListState({ data: this.localList.getAllTodos() });
       })
       .catch(error => {
         this.local.update(null);

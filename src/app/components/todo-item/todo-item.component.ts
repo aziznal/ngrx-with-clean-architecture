@@ -23,6 +23,10 @@ export class TodoItemComponent implements OnInit, OnChanges {
   @Output()
   deleted = new EventEmitter<number>();
 
+  // Emits when the todo is "opened"
+  @Output()
+  opened = new EventEmitter<void>();
+
   isEditMode = false;
 
   // used when editing a todo
