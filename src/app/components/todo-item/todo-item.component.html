@@ -77,6 +77,14 @@
 </div>
 
 <div class="d-flex fx-row gap-6">
+  <!-- Open Link icon -->
+  <a
+    routerLink="/todo/{{ todo.id }}"
+    *ngIf="!isEditMode"
+  >
+    <i class="fas fa-external-link-alt"></i>
+  </a>
+
   <!-- Delete icon -->
   <i
     class="fas fa-trash"

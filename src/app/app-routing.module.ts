@@ -1,18 +1,26 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { TodoPageComponent } from './screens/todo-page/todo-page.component';
-import { CanDeactivateComponent } from './guards/can-decativate-component.template';
+
+import { CanDeactivateGuard } from './guards/can-deactivate.guard';
+
+import { TodoDetailsPageComponent } from './screens/todo-details-page/todo-details-page.component';
+import { TodoListPageComponent } from './screens/todo-list-page/todo-list-page.component';
 
 const routes: Routes = [
   {
-    path: 'todo',
-    component: TodoPageComponent,
-    canDeactivate: [CanDeactivateComponent],
+    path: 'todos',
+    component: TodoListPageComponent,
+    canDeactivate: [CanDeactivateGuard],
+  },
+  {
+    path: 'todo/:id',
+    component: TodoDetailsPageComponent,
+    canDeactivate: [CanDeactivateGuard],
   },
   // default path
   {
     path: '',
-    redirectTo: '/todo',
+    redirectTo: '/todos',
     pathMatch: 'full',
   },
 ];

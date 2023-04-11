@@ -4,10 +4,10 @@ import { map, tap } from 'rxjs';
 import { CanDeactivateComponent } from '../../guards/can-decativate-component.template';
 
 @Component({
-  templateUrl: './todo-page.component.html',
-  styleUrls: ['./todo-page.component.scss'],
+  templateUrl: './todo-list-page.component.html',
+  styleUrls: ['./todo-list-page.component.scss'],
 })
-export class TodoPageComponent implements CanDeactivateComponent {
+export class TodoListPageComponent implements CanDeactivateComponent {
   state$? = this.getTodosUsecase.execute().pipe(
     tap(state => {
       if (state.error) {

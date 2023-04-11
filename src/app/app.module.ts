@@ -9,13 +9,14 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { AppComponent } from './app.component';
 import { TodoItemComponent } from './components/todo-item/todo-item.component';
-import { TodoPageComponent } from './screens/todo-page/todo-page.component';
+import { TodoListPageComponent } from './screens/todo-list-page/todo-list-page.component';
 
 import { DisabledDirective } from './directives/disabled-overlay.directive';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { TodoDetailsPageComponent } from './screens/todo-details-page/todo-details-page.component';
 @NgModule({
-  declarations: [AppComponent, TodoPageComponent, TodoItemComponent, DisabledDirective],
+  declarations: [AppComponent, TodoListPageComponent, TodoDetailsPageComponent, TodoItemComponent, DisabledDirective],
   imports: [
     BrowserModule,
     AppRoutingModule,
