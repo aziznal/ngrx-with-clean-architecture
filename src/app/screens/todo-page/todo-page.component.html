@@ -8,30 +8,38 @@
     <div id="header">
       <h2>Todo List</h2>
 
-      <button
-        (click)="createTodoUsecase.execute()"
-        [disabled]="state.loading"
+      <div
+        class="button-and-loading-container"
+        [class.is-loading]="state.loading"
       >
-        <i class="fas fa-plus"></i>
+        <button
+          (click)="createTodoUsecase.execute()"
+          [disabled]="state.loading"
+        >
+          <i class="fas fa-plus"></i>
 
-        New
-      </button>
+          New
+        </button>
+
+        <mat-spinner
+          *ngIf="state.loading"
+          [diameter]="30"
+          [strokeWidth]="4"
+        ></mat-spinner>
+      </div>
     </div>
 
     <app-todo-item
-      *ngFor="let todo of state.data"
+      *ngFor="let todo of state.data; trackBy: trackByFn"
       [todo]="todo"
       (updated)="updateTodoUsecase.execute($event)"
       (deleted)="deleteTodoUsecase.execute($event)"
-      appDisabledOverlay
-      [disabled]="state.loading"
-      [cdkDragDisabled]="state.loading"
       cdkDrag
     ></app-todo-item>
 
     <div
       id="noTodos"
-      *ngIf="!state.data || state.data.length === 0"
+      *ngIf="!state.loading && !state.error && (!state.data || state.data.length === 0)"
     >
       No todos found.
     </div>
@@ -43,11 +51,5 @@
     >
       Loading...
     </div>
-
   </div>
-
-  <!-- loading template view -->
-  <ng-template #loading>
-    <div class="loading-view">Loading...</div>
-  </ng-template>
 </ng-container>

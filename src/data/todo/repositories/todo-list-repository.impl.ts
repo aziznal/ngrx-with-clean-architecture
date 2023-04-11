@@ -24,19 +24,18 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
   // an observable. This way, consequent calls to create, delete, and reorder
   // can modify local and return it without having to call remote again.
   loadAllTodos(): Observable<todoCore.repositories.TodoListState> {
-    console.log('foo');
-
     if (this.#todoListState$.value.loading) {
       return this.#todoListState$;
     }
 
+    // loading is set to true in this one because it's the first call to remote
     this.#emitTodoListState({ loading: true, error: null });
 
     this.remoteDataSource
       .getAllTodos()
       .then(todos => {
         this.localTodoListDataSource.setAllTodos(todos);
-        this.#emitTodoListState({ loading: false, data: this.localTodoListDataSource.getAllTodos() });
+        this.#emitTodoListState({ loading: false, data: this.localTodoListDataSource.getAllTodos(), error: null });
       })
       .catch(error => {
         // reset cache on error
@@ -49,82 +48,74 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
   }
 
   create(todo: todoCore.entities.Todo): void {
-    this.#emitTodoListState({ loading: true, error: null });
+    this.#emitTodoListState({ error: null, loading: true });
+
+    // optimistic update
+    this.localTodoListDataSource.create(todo);
+    this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
 
     this.remoteDataSource
       .createTodo(todo)
       .then(() => {
-        // update local list
-        this.localTodoListDataSource.create(todo);
-
-        // emit updated local list
-        this.#emitTodoListState({ loading: false, data: this.localTodoListDataSource.getAllTodos() });
+        this.#emitTodoListState({ loading: false });
       })
       .catch(error => {
-        // reset cache on error
-        this.localTodoListDataSource.setAllTodos(null);
-
+        this.loadAllTodos(); // reset cache on error
         this.#emitTodoListState({ loading: false, error: error.message });
       });
   }
 
   update(todo: todoCore.entities.Todo): void {
-    this.#emitTodoListState({ loading: true, error: null });
+    this.#emitTodoListState({ error: null, loading: true });
+
+    // optimistic update
+    this.localTodoListDataSource.update(todo);
+    this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
 
     this.remoteDataSource
       .updateTodo(todo)
       .then(() => {
-        // update local todo
-        this.localTodoListDataSource.update(todo);
-
-        // emit updated local todo
-        this.#emitTodoListState({ loading: false, data: this.localTodoListDataSource.getAllTodos() });
+        this.#emitTodoListState({ loading: false });
       })
       .catch(error => {
-        // reset cache on error
-        this.localTodoListDataSource.update(null);
-
+        this.loadAllTodos(); // reset cache on error
         this.#emitTodoListState({ loading: false, error: error.message });
       });
   }
 
   reorder(from: number, to: number): void {
-    this.#emitTodoListState({ loading: true, error: null });
+    this.#emitTodoListState({ error: null, loading: true });
+
+    // optimistic update
+    this.localTodoListDataSource.reorder(from, to);
+    this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
 
     this.remoteDataSource
       .reorderTodo(from, to)
       .then(() => {
-        // update local list
-        this.localTodoListDataSource.reorder(from, to);
-
-        // emit updated local list
-        this.#emitTodoListState({ loading: false, data: this.localTodoListDataSource.getAllTodos() });
+        this.#emitTodoListState({ loading: false });
       })
       .catch(error => {
-        // reset cache on error
-        this.localTodoListDataSource.setAllTodos(null);
-
-        this.#emitTodoListState({ loading: false, error: error.message });
+        this.#emitTodoListState({ error: error.message });
+        this.loadAllTodos(); // reset cache on error
       });
   }
 
   delete(id: number): void {
-    this.#emitTodoListState({ loading: true, error: null });
+    this.#emitTodoListState({ error: null, loading: true });
+
+    // optimistic update
+    this.localTodoListDataSource.delete(id);
+    this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
 
     this.remoteDataSource
       .deleteTodo(id)
       .then(() => {
-        // update local list
-        this.localTodoListDataSource.delete(id);
-
-        // emit updated local list
-        this.#emitTodoListState({ loading: false, data: this.localTodoListDataSource.getAllTodos() });
+        this.#emitTodoListState({ loading: false });
       })
       .catch(error => {
-        // reset cache on error
-        this.localTodoListDataSource.setAllTodos(null);
-
-        this.#emitTodoListState({ loading: false, error: error.message });
+        this.#emitTodoListState({ error: error.message });
+        this.loadAllTodos(); // reset cache on error
       });
   }
 

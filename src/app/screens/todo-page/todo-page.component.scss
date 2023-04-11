@@ -25,6 +25,30 @@
   border-top-right-radius: 8px;
 }
 
+.button-and-loading-container {
+  position: relative;
+
+  button {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  &.is-loading {
+    button {
+      transition: transform 0.2s ease-in-out;
+      transform: translateX(-40px);
+    }
+  }
+
+  mat-spinner {
+    position: absolute;
+
+    right: 0;
+
+    top: 50%;
+    transform: translateY(-50%);
+  }
+}
+
 #noTodos {
   display: flex;
   flex-direction: column;

@@ -13,6 +13,7 @@ import { TodoPageComponent } from './screens/todo-page/todo-page.component';
 
 import { DisabledDirective } from './directives/disabled-overlay.directive';
 
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 @NgModule({
   declarations: [AppComponent, TodoPageComponent, TodoItemComponent, DisabledDirective],
   imports: [
@@ -22,6 +23,7 @@ import { DisabledDirective } from './directives/disabled-overlay.directive';
     FormsModule,
     ReactiveFormsModule,
     DragDropModule,
+    MatProgressSpinnerModule,
     DependencyInjectionModule.forRoot(),
   ],
   providers: [],
