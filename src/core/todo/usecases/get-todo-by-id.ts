@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 
-import { TodoRepository, TodoState } from '../repositories';
+import { TodoRepository, TodoState } from '../repositories/todo-repository.interface';
 
 export abstract class GetTodoByIdUsecase {
   abstract execute(id: number): Observable<TodoState>;

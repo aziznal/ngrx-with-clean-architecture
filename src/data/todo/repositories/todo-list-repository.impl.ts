@@ -2,10 +2,16 @@ import { BehaviorSubject, Observable } from 'rxjs';
 
 import { todoCore } from '@core';
 
-import { LocalTodoListDataSource, RemoteTodoDataSource } from '../data-sources';
+import { LocalTodoDataSource, LocalTodoListDataSource, RemoteTodoDataSource } from '../data-sources';
 
-export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRepository {
+export class TodoRepositoryImpl implements todoCore.repositories.TodoRepository {
   #todoListState$ = new BehaviorSubject<todoCore.repositories.TodoListState>({
+    loading: false,
+    error: null,
+    data: null,
+  });
+
+  #todoState$ = new BehaviorSubject<todoCore.repositories.TodoState>({
     loading: false,
     error: null,
     data: null,
@@ -15,9 +21,14 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
     return this.#todoListState$;
   }
 
+  get todoState$(): Observable<todoCore.repositories.TodoState> {
+    return this.#todoState$;
+  }
+
   constructor(
-    private readonly remoteDataSource: RemoteTodoDataSource,
-    private readonly localTodoListDataSource: LocalTodoListDataSource,
+    private readonly remote: RemoteTodoDataSource,
+    private readonly localList: LocalTodoListDataSource,
+    private readonly local: LocalTodoDataSource,
   ) {}
 
   // get methods always fetch from remote first, then update local, then return
@@ -27,17 +38,36 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
     // loading is set to true in this one because it's the first call to remote
     this.#emitTodoListState({ loading: true, error: null });
 
-    await this.remoteDataSource
+    await this.remote
       .getAllTodos()
       .then(todos => {
-        this.localTodoListDataSource.setAllTodos(todos);
-        this.#emitTodoListState({ loading: false, data: this.localTodoListDataSource.getAllTodos(), error: null });
+        this.localList.setAllTodos(todos);
+        this.#emitTodoListState({ loading: false, data: this.localList.getAllTodos(), error: null });
       })
       .catch(error => {
         // reset cache on error
-        this.localTodoListDataSource.setAllTodos(null);
+        this.localList.setAllTodos(null);
 
         this.#emitTodoListState({ loading: false, error: error.message });
+      });
+  }
+
+  async loadTodoById(id: number): Promise<void> {
+    this.#emitTodoState({ loading: true, error: null });
+
+    await this.remote
+      .getTodoById(id)
+      .then(todo => {
+        this.local.update(todo);
+        this.localList.update(todo);
+
+        this.#emitTodoState({ loading: false, data: this.local.getTodo(), error: null });
+      })
+      .catch(error => {
+        this.local.update(null);
+        this.localList.update(null);
+
+        this.#emitTodoState({ loading: false, error: error.message });
       });
   }
 
@@ -45,10 +75,10 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
     this.#emitTodoListState({ error: null, loading: true });
 
     // optimistic update
-    this.localTodoListDataSource.create(todo);
-    this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
+    this.localList.create(todo);
+    this.#emitTodoListState({ data: this.localList.getAllTodos() });
 
-    await this.remoteDataSource
+    await this.remote
       .createTodo(todo)
       .then(() => {
         this.#emitTodoListState({ loading: false });
@@ -63,10 +93,17 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
     this.#emitTodoListState({ error: null, loading: true });
 
     // optimistic update
-    this.localTodoListDataSource.update(todo);
-    this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
+    this.localList.update(todo);
 
-    await this.remoteDataSource
+    // also update local-todo if it's the same todo
+    if (this.local.getTodo()?.id === todo.id) {
+      this.local.update(todo);
+    }
+
+    this.#emitTodoListState({ data: this.localList.getAllTodos() });
+    this.#emitTodoState({ data: this.local.getTodo() });
+
+    await this.remote
       .updateTodo(todo)
       .then(() => {
         this.#emitTodoListState({ loading: false });
@@ -81,10 +118,10 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
     this.#emitTodoListState({ error: null, loading: true });
 
     // optimistic update
-    this.localTodoListDataSource.reorder(from, to);
-    this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
+    this.localList.reorder(from, to);
+    this.#emitTodoListState({ data: this.localList.getAllTodos() });
 
-    await this.remoteDataSource
+    await this.remote
       .reorderTodo(from, to)
       .then(() => {
         this.#emitTodoListState({ loading: false });
@@ -99,10 +136,17 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
     this.#emitTodoListState({ error: null, loading: true });
 
     // optimistic update
-    this.localTodoListDataSource.delete(id);
-    this.#emitTodoListState({ data: this.localTodoListDataSource.getAllTodos() });
+    this.localList.delete(id);
 
-    await this.remoteDataSource
+    // also update local-todo if it's the same todo
+    if (this.local.getTodo()?.id === id) {
+      this.local.update(null);
+    }
+
+    this.#emitTodoListState({ data: this.localList.getAllTodos() });
+    this.#emitTodoState({ data: this.local.getTodo() });
+
+    await this.remote
       .deleteTodo(id)
       .then(() => {
         this.#emitTodoListState({ loading: false });
@@ -115,5 +159,9 @@ export class TodoListRepositoryImpl implements todoCore.repositories.TodoListRep
 
   #emitTodoListState(newState: Partial<todoCore.repositories.TodoListState>) {
     this.#todoListState$.next({ ...this.#todoListState$.getValue(), ...newState });
+  }
+
+  #emitTodoState(newState: Partial<todoCore.repositories.TodoState>) {
+    this.#todoState$.next({ ...this.#todoState$.getValue(), ...newState });
   }
 }

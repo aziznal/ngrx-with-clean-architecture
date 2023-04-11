@@ -31,11 +31,11 @@ export class TodoListPageComponent implements CanDeactivateComponent {
   }
 
   constructor(
-    public getTodosUsecase: todoCore.usecases.GetAllTodosUsecase,
-    public createTodoUsecase: todoCore.usecases.CreateTodoInListUsecase,
-    public updateTodoUsecase: todoCore.usecases.UpdateTodoInListUsecase,
-    public deleteTodoUsecase: todoCore.usecases.DeleteTodoInListUsecase,
-    public reorderTodoUsecase: todoCore.usecases.ReorderTodoInListUsecase,
+    public getTodosUsecase: todoCore.usecases.GetTodoListUsecase,
+    public createTodoUsecase: todoCore.usecases.CreateTodoUsecase,
+    public updateTodoUsecase: todoCore.usecases.UpdateTodoUsecase,
+    public deleteTodoUsecase: todoCore.usecases.DeleteTodoUsecase,
+    public reorderTodoUsecase: todoCore.usecases.ReorderTodoUsecase,
   ) {}
 
   trackByFn(index: number, item: todoCore.entities.Todo) {

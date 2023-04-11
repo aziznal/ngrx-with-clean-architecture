@@ -1,17 +1,17 @@
-import { Observable, shareReplay } from 'rxjs';
+import { Observable } from 'rxjs';
 
-import { TodoListRepository, TodoListState } from '../repositories';
+import { TodoListState, TodoRepository } from '../repositories/todo-repository.interface';
 
-export abstract class GetAllTodosUsecase {
+export abstract class GetTodoListUsecase {
   abstract execute(): Observable<TodoListState>;
 }
 
-export class GetAllTodosImpl implements GetAllTodosUsecase {
-  constructor(private todoListRepository: TodoListRepository) {}
+export class GetTodoListImpl implements GetTodoListUsecase {
+  constructor(private todoRepository: TodoRepository) {}
 
   execute(): Observable<TodoListState> {
-    this.todoListRepository.loadAllTodos();
+    this.todoRepository.loadAllTodos();
 
-    return this.todoListRepository.todoListState$;
+    return this.todoRepository.todoListState$;
   }
 }

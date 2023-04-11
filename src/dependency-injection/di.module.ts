@@ -19,27 +19,24 @@ const providers: Provider[] = [
 
   // Repository injections
   {
-    provide: todoCore.repositories.TodoListRepository,
-    useFactory: (
-      remoteDataSource: todoData.dataSources.RemoteTodoDataSource,
-      localTodoListDataSource: todoData.dataSources.LocalTodoListDataSource,
-    ) => new todoData.repositories.TodoListRepositoryImpl(remoteDataSource, localTodoListDataSource),
-    deps: [todoData.dataSources.RemoteTodoDataSource, todoData.dataSources.LocalTodoListDataSource],
-  },
-  {
     provide: todoCore.repositories.TodoRepository,
     useFactory: (
       remoteDataSource: todoData.dataSources.RemoteTodoDataSource,
+      localTodoListDataSource: todoData.dataSources.LocalTodoListDataSource,
       localDataSource: todoData.dataSources.LocalTodoDataSource,
-    ) => new todoData.repositories.TodoRepositoryImpl(remoteDataSource, localDataSource),
-    deps: [todoData.dataSources.RemoteTodoDataSource, todoData.dataSources.LocalTodoDataSource],
+    ) => new todoData.repositories.TodoRepositoryImpl(remoteDataSource, localTodoListDataSource, localDataSource),
+    deps: [
+      todoData.dataSources.RemoteTodoDataSource,
+      todoData.dataSources.LocalTodoListDataSource,
+      todoData.dataSources.LocalTodoDataSource,
+    ],
   },
 
   // Usecase injections
   {
-    provide: todoCore.usecases.GetAllTodosUsecase,
-    useFactory: (repo: todoCore.repositories.TodoListRepository) => new todoCore.usecases.GetAllTodosImpl(repo),
-    deps: [todoCore.repositories.TodoListRepository],
+    provide: todoCore.usecases.GetTodoListUsecase,
+    useFactory: (repo: todoCore.repositories.TodoRepository) => new todoCore.usecases.GetTodoListImpl(repo),
+    deps: [todoCore.repositories.TodoRepository],
   },
   {
     provide: todoCore.usecases.GetTodoByIdUsecase,
@@ -47,28 +44,24 @@ const providers: Provider[] = [
     deps: [todoCore.repositories.TodoRepository],
   },
   {
-    provide: todoCore.usecases.CreateTodoInListUsecase,
-    useFactory: (repo: todoCore.repositories.TodoListRepository) =>
-      new todoCore.usecases.CreateTodoInListUsecaseImpl(repo),
-    deps: [todoCore.repositories.TodoListRepository],
+    provide: todoCore.usecases.CreateTodoUsecase,
+    useFactory: (repo: todoCore.repositories.TodoRepository) => new todoCore.usecases.CreateTodoUsecaseImpl(repo),
+    deps: [todoCore.repositories.TodoRepository],
   },
   {
-    provide: todoCore.usecases.DeleteTodoInListUsecase,
-    useFactory: (repo: todoCore.repositories.TodoListRepository) =>
-      new todoCore.usecases.DeleteTodoInListUsecaseImpl(repo),
-    deps: [todoCore.repositories.TodoListRepository],
+    provide: todoCore.usecases.DeleteTodoUsecase,
+    useFactory: (repo: todoCore.repositories.TodoRepository) => new todoCore.usecases.DeleteTodoUsecaseImpl(repo),
+    deps: [todoCore.repositories.TodoRepository],
   },
   {
-    provide: todoCore.usecases.UpdateTodoInListUsecase,
-    useFactory: (repo: todoCore.repositories.TodoListRepository) =>
-      new todoCore.usecases.UpdateTodoInListUsecaseImpl(repo),
-    deps: [todoCore.repositories.TodoListRepository],
+    provide: todoCore.usecases.UpdateTodoUsecase,
+    useFactory: (repo: todoCore.repositories.TodoRepository) => new todoCore.usecases.UpdateTodoUsecaseImpl(repo),
+    deps: [todoCore.repositories.TodoRepository],
   },
   {
-    provide: todoCore.usecases.ReorderTodoInListUsecase,
-    useFactory: (repo: todoCore.repositories.TodoListRepository) =>
-      new todoCore.usecases.ReorderTodoInListUsecaseImpl(repo),
-    deps: [todoCore.repositories.TodoListRepository],
+    provide: todoCore.usecases.ReorderTodoUsecase,
+    useFactory: (repo: todoCore.repositories.TodoRepository) => new todoCore.usecases.ReorderTodoUsecaseImpl(repo),
+    deps: [todoCore.repositories.TodoRepository],
   },
 ];
 
