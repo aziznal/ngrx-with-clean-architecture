@@ -10,3 +10,28 @@
 <h1>
   Todo Details ({{ id }})
 </h1>
+
+<ng-container *ngIf="(state$ | async) as state">
+  <ng-container *ngIf="state.loading">
+    <p>Loading...</p>
+  </ng-container>
+
+  <ng-container *ngIf="!state.loading && state.data">
+    <h3>
+      Title:
+    </h3>
+    {{ state.data.title }}
+
+    <h3>
+      Description:
+    </h3>
+
+    {{ state.data.description }}
+
+    <h3>
+      Completed:
+    </h3>
+
+    {{ state.data.completed }}
+  </ng-container>
+</ng-container>
