@@ -1,1 +1,1 @@
-export * from './todo-list-repository.impl';
+export * from './todo-repository.impl';
