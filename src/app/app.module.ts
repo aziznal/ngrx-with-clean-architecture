@@ -15,6 +15,8 @@ import { DisabledDirective } from './directives/disabled-overlay.directive';
 
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { TodoDetailsSectionComponent } from './screens/todo-details-section/todo-details-section.component';
+import { StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
 @NgModule({
   declarations: [
     AppComponent,
@@ -32,6 +34,8 @@ import { TodoDetailsSectionComponent } from './screens/todo-details-section/todo
     DragDropModule,
     MatProgressSpinnerModule,
     DependencyInjectionModule.forRoot(),
+    StoreModule.forRoot({}, {}),
+    EffectsModule.forRoot([]),
   ],
   providers: [],
   bootstrap: [AppComponent],
