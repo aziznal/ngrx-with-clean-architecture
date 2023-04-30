@@ -1,18 +1,22 @@
 import { NgModule, Provider } from '@angular/core';
 import { todoCore as todoCore } from '@core';
 import { todoData as todoData } from '@data';
+import { EffectsModule } from '@ngrx/effects';
+import { StoreModule } from '@ngrx/store';
+
+const imports = [EffectsModule.forRoot(), StoreModule.forRoot({})];
 
 const providers: Provider[] = [
   // Data Source injections
   {
-    provide: todoData.dataSources.RemoteTodoDataSource,
-    useFactory: () => new todoData.dataSources.RemoteTodoDataSourceImpl(),
+    provide: todoData._datasources.RemoteTodoDataSource,
+    useFactory: () => new todoData._datasources.RemoteTodoDataSourceImpl(),
   },
 
   // Repository injections
   {
     provide: todoCore.repositories.TodoRepository,
-    useFactory: () => new todoData.repositories.TodoRepositoryImpl(),
+    useFactory: () => new todoData.TodoRepositoryImpl(),
     deps: [],
   },
 
@@ -54,6 +58,7 @@ export class DependencyInjectionModule {
   static forRoot() {
     return {
       ngModule: DependencyInjectionModule,
+      imports: [...imports],
       providers: [...providers],
     };
   }

@@ -1,3 +1,5 @@
-export * as repositories from './repositories';
-export * as dataSources from './data-sources';
-export * as _reducers from './reducers';
+// exported for dependency injection
+export * as _reducers from './todo.reducers';
+export * as _datasources from './remote-todo-data-source';
+
+export { TodoRepositoryImpl } from './todo-repository.impl';
